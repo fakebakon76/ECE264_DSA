@@ -21,9 +21,21 @@ class Foobar {
         explicit Foobar();
         string getName();
         int getStrength();
+        int setName(string n);
         void print();
         int setNext(Foobar *foobar);
-        int getNext(Foobar *foobar);
+        int getNext(Foobar **foobar);
 };
+
+class Foo : public Foobar {
+    public:
+        Foo(string n, int pos);
+};
+
+class Bar : public Foobar {
+    public:
+        Bar(string n, int pos);
+};
+
 
 #endif

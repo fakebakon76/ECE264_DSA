@@ -7,7 +7,7 @@
         tail->setNext(node);
         tail = node;
 
-        if(tail == node) return 0;
+        if(tail == node) {length++; return 0;}
         else return -1;
     }
 
@@ -15,4 +15,7 @@
         *node = &(*tail);
         return 0;
     }
-
+    
+    int List::getLength() {
+        return length;
+    }

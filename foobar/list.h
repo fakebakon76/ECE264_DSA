@@ -7,10 +7,12 @@ class List {
     protected:
         Foobar *head;
         Foobar *tail;
+        int length;
 
     public:
         explicit List(Foobar *node);
         int append(Foobar *node);
         int getTail(Foobar **node);
+        int getLength();
 };
 #endif

@@ -5,31 +5,55 @@
 using namespace std;
 
 void getFileNames(string *in, string *out);
-void createFoobars(Foobar *first);
+int createFoobars(string file, List *list);
 
 int main() {
     // Getting text files names
     string inFile = "",
            oFile  = "";
     
-    //getFileNames(&inFile, &oFile);
-    Foobar head = Foobar("Penis", 69);
-    List list = List(&head);
-    Foobar *fuck = NULL;
-    list.getTail(&fuck);
-    list.append(new Foobar("Shitfuck", 32));
-    fuck->print();
+    getFileNames(&inFile, &oFile);
 
     // Reading the file and creating the people
-    ifstream input(inFile);
-    
+    List *list = NULL;
 
-
+    createFoobars(inFile, list);
 
     return 0;
 }
 
-void createFoobars(Foobar ) {
+int createFoobars(string file, List *list) {
+    string line;
+    int i = 0;
+    Foobar *temp = NULL;
+    Foobar *check = NULL;
+    ifstream input(file);
+
+    while(getline(input, line, ' ')) {
+        cout<< "Position:  " << i << ", Current line = " << line <<"\n\n";
+        
+        if(i%2==0) {
+            if(line == "foo")          temp = new Foo("", i/2+1);
+            else if (line == "bar")    temp = new Bar("", i/2+1);
+            else if (line == "foobar") temp = new Foobar("", i/2+1);
+            else {cout << "Something got messed up pt1.\n"; return -1;}
+            
+            if(i==0) list = new List(temp);
+            else list->append(temp);
+        
+        } else if(i%2==1) {
+            temp->setName(line);
+          
+            list->getTail(&check);
+            check->print();
+            cout << "----------------------";
+            string fuck = "";
+            cin >> fuck;
+        } else {cout << "Something got messed up pt2.\n"; return -1;}
+        
+        i++;
+    }
+    return 0;    
 }
 
 
