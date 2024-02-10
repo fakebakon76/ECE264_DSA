@@ -13,7 +13,7 @@ class Foobar {
         int position;
         Foobar *next;
         string name;
-        
+        string type = "foobar";
         int getPosition();
 
     public:
@@ -22,7 +22,7 @@ class Foobar {
         string getName();
         int getStrength();
         int setName(string n);
-        void print();
+        string print();
         int setNext(Foobar *foobar);
         int getNext(Foobar **foobar);
 };

@@ -1,6 +1,6 @@
 #include <list.h>
 
-    List::List(Foobar *node): head(node), tail(node) {
+    List::List(Foobar *node): head(node), tail(node), length(1){
     }
 
     int List::append(Foobar *node) {
@@ -13,6 +13,11 @@
 
     int List::getTail(Foobar **node) {
         *node = &(*tail);
+        return 0;
+    }
+
+    int List::getHead(Foobar **node) {
+        *node = &(*head);
         return 0;
     }
     

@@ -14,5 +14,6 @@ class List {
         int append(Foobar *node);
         int getTail(Foobar **node);
         int getLength();
+        int getHead(Foobar **node);
 };
 #endif
