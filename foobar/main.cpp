@@ -1,7 +1,7 @@
 #include "foobar.h"
 #include <fstream>
 #include <list>
-
+#include <stack>
 using namespace std;
 
 int getFileNames(string *in, string *out);
@@ -10,10 +10,10 @@ int createOutput(string file, list<Foobar*> *list);
 
 int main() {
 
-    string inFile = "",
-           oFile  = "";
+    string inFile = "in.txt",
+           oFile  = "out.txt";
 
-    getFileNames(&inFile, &oFile); // Getting file names
+    //getFileNames(&inFile, &oFile); // Getting file names
 
     list<Foobar*> list{};          // Creating list to store the foobar pointers in
 
@@ -33,7 +33,6 @@ int createOutput(string file, list<Foobar*> *list) {
     // Testing to make sure there is a list to parse
     if(list->size() == 0) {cout << "There is no list so there is nothing to print!\n"; return -1;}
     
-
     ofstream out(file);
     if(out.is_open()) {
         for(auto i : *list) {
@@ -52,51 +51,47 @@ int createOutput(string file, list<Foobar*> *list) {
  *             their position and names already assigned.
  */
 int createFoobars(string file, list<Foobar*> *list) {
-    // Initializing some variables
-    string   line = "",
-             name = "",
-             type = "";
-    int      position = 1;
-    bool     on_type = 1;
-    char     c = ' ';
-    Foobar   *temp = NULL; // Pointer to temperarily store each created foobar in before appending it to the list
+    string line = "";
+    int stop;   
+
+    stack<string> names;
+    stack<string> types;
+
     ifstream input(file);
 
     while(getline(input, line)) {
-        
-        // Getting the name and type of the foobar on the current line
-        for(int i = 0; i <= (int)line.length()-1; i++) {
-            c = line[i];
-            
-            if( c == ' ' )   { on_type = 0; continue; }
-            else if( on_type ) type += c;
-            else               name += c;
-        }
-        
-        // Determining the type of foobar to create
-        if(type == "foo")          temp = new Foo(name, position);
-        else if (type == "bar")    temp = new Bar(name, position);
-        else if (type == "foobar") temp = new Foobar(name, position);
-        else {cout << "Something got messed up pt1.\n"; return -1;}
-        
-        // Appending recently created foobar to the list
-        list->push_back(temp);
-        
-        // Testing to make sure the foobar was properly appended
-        if(list->back() != temp) {
-            cout << "ERROR: In createFoobar(), the foobar was not added to the list correctly."; 
-            input.close();
-            return -1;
-        } else {
-            // Resetting some variables
-            position++;
-            name    = "";
-            type    = "";
-            on_type = 1;
-        }
+        stop = line.find(' ');
+        types.push(line.substr(0, stop));
+        names.push(line.substr(stop+1, line.length()-1-stop));
     }
 
     input.close();
+    
+    // Initializing some more variables
+    int       position = 1;
+    string    type, name;
+    
+    while(!names.empty()) {
+        type = types.top();
+
+        // Determining the type of foobar to create
+        if(type == "foo")          list->push_back(new Foo(names.top(), position));
+        else if (type == "bar")    list->push_back(new Bar(names.top(), position));
+        else if (type == "foobar") list->push_back(new Foobar(names.top(), position));
+        else {cout << "ERROR: In createFoobar(), no foobar created.\n"; return -1;}
+        
+        names.pop();
+        types.pop();
+
+        // Testing to make sure the foobar was properly appended
+        if(list->back() != temp) {
+            cout << "ERROR: In createFoobar(), the foobar not appended."; 
+            return -1;
+        }
+
+        position++;
+    }
+
     return 0;    
 }
 
