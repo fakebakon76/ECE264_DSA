@@ -5,17 +5,17 @@
 using namespace std;
 
 int getFileNames(string *in, string *out);
-int createFoobars(string file, list<Foobar*> *list);
-int createOutput(string file, list<Foobar*> *list);
+int createFoobars(string file, stack<Foobar*> *list);
+int createOutput(string file, stack<Foobar*> *list);
 
 int main() {
 
-    string inFile = "in.txt",
-           oFile  = "out.txt";
+    string inFile = "",
+           oFile  = "";
 
-    //getFileNames(&inFile, &oFile); // Getting file names
+    getFileNames(&inFile, &oFile); // Getting file names
 
-    list<Foobar*> list{};          // Creating list to store the foobar pointers in
+    stack<Foobar*> list{};          // Creating list to store the foobar pointers in
 
     createFoobars(inFile, &list);  // Parsing through the file and making the foobar pointer list
     createOutput(oFile, &list);    // Outputting the foobar information to the desired file
@@ -23,34 +23,36 @@ int main() {
     return 0;
 }
 
-/* Function:   createOutput(string file, list<Foobar*> *list)
+/* Function:   createOutput(string file, stack<Foobar*> *list)
  * Parameters: file - name of the file to write to (does not have to be pre-existing)
  *             list - pointer to a std::list of foobar pointers (the list should be full at this point)
  * Purpose:    To parse through the list of foobars and print their names and strengths to the designated
  *             output file.
  */
-int createOutput(string file, list<Foobar*> *list) {
+int createOutput(string file, stack<Foobar*> *list) {
     // Testing to make sure there is a list to parse
-    if(list->size() == 0) {cout << "There is no list so there is nothing to print!\n"; return -1;}
+    if(!list->size()) {cout << "There is no list so there is nothing to print!\n"; return -1;}
     
     ofstream out(file);
-    if(out.is_open()) {
-        for(auto i : *list) {
-            out << i->print(); // Appending the foobar information to the output file
-        }
-        out.close();
+    cout << list->size() << "   " << (int)list->size() << "\n";
+    int size = (int)list->size()-1;
+    for(int i = 0; i <= size; i++) {
+        Foobar *temp = list->top();
+        out << temp->print(); // Appending the foobar information to the output file
+        list->pop();
     }
+    out.close();
     
     return 0;
 }
 
-/* Function:   createFoobars(string file, list<Foobar*> *list)
+/* Function:   createFoobars(string file, stack<Foobar*> *list)
  * Parameters: file - name of the file to read from
  *             list - pointer to a std::list of foobar pointers (the list should be empty at this point)
  * Purpose:    To parse through the file and create a list of foobars (including bars and foos) that have 
  *             their position and names already assigned.
  */
-int createFoobars(string file, list<Foobar*> *list) {
+int createFoobars(string file, stack<Foobar*> *list) {
     string line = "";
     int stop;   
 
@@ -75,19 +77,13 @@ int createFoobars(string file, list<Foobar*> *list) {
         type = types.top();
 
         // Determining the type of foobar to create
-        if(type == "foo")          list->push_back(new Foo(names.top(), position));
-        else if (type == "bar")    list->push_back(new Bar(names.top(), position));
-        else if (type == "foobar") list->push_back(new Foobar(names.top(), position));
+        if(type == "foo")          list->push(new Foo(names.top(), position));
+        else if (type == "bar")    list->push(new Bar(names.top(), position));
+        else if (type == "foobar") list->push(new Foobar(names.top(), position));
         else {cout << "ERROR: In createFoobar(), no foobar created.\n"; return -1;}
         
         names.pop();
         types.pop();
-
-        // Testing to make sure the foobar was properly appended
-        if(list->back() != temp) {
-            cout << "ERROR: In createFoobar(), the foobar not appended."; 
-            return -1;
-        }
 
         position++;
     }
