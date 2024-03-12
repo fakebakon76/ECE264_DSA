@@ -34,7 +34,6 @@ int createOutput(string file, stack<Foobar*> *list) {
     if(!list->size()) {cout << "There is no list so there is nothing to print!\n"; return -1;}
     
     ofstream out(file);
-    cout << list->size() << "   " << (int)list->size() << "\n";
     int size = (int)list->size()-1;
     for(int i = 0; i <= size; i++) {
         Foobar *temp = list->top();
