@@ -2,14 +2,49 @@
 #define _SIMPLELIST_H
 
 #include <iostream>
-#include "Node.h"
+//#include "Node.h"
 
 using namespace std;
 
 template <typename Object>
 class SimpleList {
     private:
-        string name;
+        string name; 
+        class Node {
+            private:    
+                Object data;
+                Node *next;
+                Node *prev;
+            public:
+
+                Node(const Object d, Node *n = NULL, Node *p = NULL) {
+                    data = d;
+                    if(n) {
+                        n->prev = this;
+                        next = n;
+                    }
+                    
+                    if(p) {
+                        p->next = this;
+                        prev = p;
+                    }
+                }
+                    
+
+                Node *getNext() {return next;}
+                Node *getPrev() {return prev;}
+                Object getData() {return data;}
+
+                int setNext(Node *n) {
+                    next = n;
+                    return 0;
+                }
+
+                int setPrev(Node *n) {
+                    prev = n;
+                    return 0;
+                }
+        };
         
     public:
         virtual int push(Object data) = 0;
@@ -22,8 +57,8 @@ class SimpleList {
 
     // Node stuff
     protected:
-        Node<Object> *head = NULL;
-        Node<Object> *tail = NULL;
+        Node *head = NULL;
+        Node *tail = NULL;
         int size = 0;
 
         int preppend(const Object data) {
@@ -34,7 +69,7 @@ class SimpleList {
         }
 
         int append(const Object data) {
-            tail = new Node<Object>(data, NULL, tail);
+            tail = new Node(data, NULL, tail);
             if(!head) head = tail;
             size++;
             return 0;
@@ -48,7 +83,7 @@ class SimpleList {
                 return -1;
             }
 
-            Node<Object> *temp = this->head;
+            Node *temp = this->head;
             cout << "\nPrinting...\n";
             for(int i = 0; i < this->getSize(); i++) {
                 cout << "  " << temp->getData() << "\n";
@@ -80,11 +115,11 @@ class Stack : public SimpleList<Object> {
         Object pop() {
             cout << "PROCESSING COMMAND: pop " << this->getName() << "\n";
             
-            Node<Object> *toPop = NULL;
+            Object toPop = NULL;
             int size = this->getSize();
             if(! size) cout << "ERROR: This list is empty!\n";
             else if(this->tail) {
-                toPop = this->tail;
+                toPop = this->tail->getData();
                 if(size == 1) {
                     this->head = NULL;
                     this->tail = NULL;
@@ -96,13 +131,51 @@ class Stack : public SimpleList<Object> {
                 this->size--;
             } else cout << "ERROR: Stack::pop() says the stack " << this->getName() << " has a size but has no tail!\n";
             
-            cout << "Value popped: " << toPop->getData() << "\n";
-            return toPop->getData();
+            cout << "Value popped: " << toPop << "\n";
+            return toPop;
         }
 };
 
 template <typename Object>
-class Queue : private SimpleList<Object> {
+class Queue : public SimpleList<Object> {
+    public:
+        explicit Queue(const string n): SimpleList<Object>(n) {}
+
+        int push(const Object data) {
+            cout << "PROCESSING COMMAND: push " << this->getName() << " " << data << "\n";
+            this->append(data);
+            
+            //Checking if it worked
+            if(this->tail->getData() != data) {
+                cout << "ERROR: Queue::push() failed!\n";
+                return -1;
+            }
+            return 0;
+        }
+
+        Object pop() {
+            cout << "PROCESSING COMMAND: pop " << this->getName() << "\n";
+            
+            Object toPop = NULL;
+            int size = this->getSize();
+            if(! size) cout << "ERROR: This list is empty!\n";
+            else if(this->tail) {
+                toPop = this->head->getData();
+                if(size == 1) {
+                    this->head = NULL;
+                    this->tail = NULL;
+                } else {
+                    this->head = this->head->getNext();
+                    this->head->setPrev(NULL);
+                }
+
+                this->size--;
+            } else cout << "ERROR: Stack::pop() says the stack " << this->getName() << " has a size but has no tail!\n";
+            
+            cout << "Value popped: " << toPop << "\n";
+            return toPop;
+        }
+
 };
 
 #endif
