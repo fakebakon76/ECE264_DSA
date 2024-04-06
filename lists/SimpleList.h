@@ -2,6 +2,7 @@
 #define _SIMPLELIST_H
 
 #include <iostream>
+#include "Node.h"
 
 using namespace std;
 
@@ -12,118 +13,96 @@ class SimpleList {
         
     public:
         virtual int push(Object data) = 0;
-        virtual Object *pop() = 0;
-        string get_Name() {return name;}
-        explicit SimpleList(const string n): name(n), size(0), head(NULL), tail(NULL) {}
+        virtual Object pop() = 0;
+        string getName() {return name;}
+        int getSize() {return size;}
+        SimpleList(const string n): name(n), size(0), head(NULL), tail(NULL) {}
+
+        
 
     // Node stuff
-    private:
-        struct Node {
-            Object *data;
-            Node *next;
-            Node *prev;
-
-            Node(const Object &d, Node *n, Node *p) {
-                data = d;
-                if(n) n->next = this;
-                if(p) p->prev = this;
-            }
-        };
-
     protected:
-        Node *head;
-        Node *tail;
-        int size;
+        Node<Object> *head = NULL;
+        Node<Object> *tail = NULL;
+        int size = 0;
 
-        int preppend(const Object &data) {
-            head = Node(data, head, NULL);
+        int preppend(const Object data) {
+            head = new Node(data, head, NULL);
             if(!tail) tail = head;
             size++;
             return 0;
         }
 
-        int append(const Object &data) {
-            tail = Node(data, NULL, tail);
+        int append(const Object data) {
+            tail = new Node<Object>(data, NULL, tail);
             if(!head) head = tail;
             size++;
             return 0;
         }
 
-        int getSize() {return size;}
+
+    public:
+        int traverse() {
+            if(! this->size) {
+                cout << "ERROR: SimpleList::traverse() has error because list is empty!\n";
+                return -1;
+            }
+
+            Node<Object> *temp = this->head;
+            cout << "\nPrinting...\n";
+            for(int i = 0; i < this->getSize(); i++) {
+                cout << "  " << temp->getData() << "\n";
+                temp = temp->getNext();
+            }
+            cout << " - - - - - - - - - - - - - -\n\n";
+
+            return 0;
+        }
 };
 
 template <typename Object>
 class Stack : public SimpleList<Object> {
     public:
-        Stack(string n): SimpleList(n) {}
+        explicit Stack(const string n): SimpleList<Object>(n) {}
 
-        int push(const Object &data) {
-            append(data);
+        int push(const Object data) {
+            cout << "PROCESSING COMMAND: push " << this->getName() << " " << data << "\n";
+            this->append(data);
             
             //Checking if it worked
-            if(tail->data != data) {
+            if(this->tail->getData() != data) {
                 cout << "ERROR: Stack::push() failed!\n";
                 return -1;
             }
             return 0;
         }
 
-        Object *pop() {
-            Object *toPop = NULL;
+        Object pop() {
+            cout << "PROCESSING COMMAND: pop " << this->getName() << "\n";
             
-            if(!size) cout << "ERROR: This list is empty!\n";
-            else if(tail) {
-                toPop = tail->data;
+            Node<Object> *toPop = NULL;
+            int size = this->getSize();
+            if(! size) cout << "ERROR: This list is empty!\n";
+            else if(this->tail) {
+                toPop = this->tail;
                 if(size == 1) {
-                    head = NULL;
-                    tail = NULL;
+                    this->head = NULL;
+                    this->tail = NULL;
                 } else {
-                    tail = tail->prev;
-                    tail->next = NULL;
+                    this->tail = this->tail->getPrev();
+                    this->tail->setNext(NULL);
                 }
 
-                size--;
-            } else cout << "ERROR: Stack::pop() says the stack " << getName() << " has a size but has no tail!\n";
-
-            return toPop;
+                this->size--;
+            } else cout << "ERROR: Stack::pop() says the stack " << this->getName() << " has a size but has no tail!\n";
+            
+            cout << "Value popped: " << toPop->getData() << "\n";
+            return toPop->getData();
         }
 };
 
 template <typename Object>
 class Queue : private SimpleList<Object> {
-    public:
-        Queue(string n): SimpleList(n) {}
-
-        int push(const Object &data) {
-            append(data);
-            
-            //Checking if it worked
-            if(tail->data != data) {
-                cout << "ERROR: Stack::push() failed!\n";
-                return -1;
-            }
-            return 0;
-        }
-
-        Object *pop() {
-            Object *toPop = NULL;
-            
-            if(!size) cout << "ERROR: This list is empty!\n";
-            else if(head) {
-                toPop = head->data;
-                if(size == 1) {
-                    head = NULL;
-                    tail = NULL;
-                } else {
-                    head = head->next;
-                    head->prev = NULL;
-                }
-
-                size--;
-            } else cout << "ERROR: Stack::pop() says the stack " << getName() << " has a size but has no head!\n";
-
-            return toPop;
-        }
 };
 
 #endif

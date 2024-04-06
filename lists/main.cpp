@@ -11,12 +11,16 @@ int pop(int key);
 
 int main() {
     
+    /*
     string inFile;
     cout << "Enter the name of the input text file: ";
     cin >> inFile;
 
     createLists(inFile);
+    */
 }
+
+
 
 int createLists(const string file) {
     
