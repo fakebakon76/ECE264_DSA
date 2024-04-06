@@ -6,8 +6,10 @@
 
 using namespace std;
 
+class SimpleListInterface {};
+
 template <typename Object>
-class SimpleList {
+class SimpleList : public SimpleListInterface{
     private:
         string name; 
         class Node {
