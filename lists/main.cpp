@@ -123,6 +123,7 @@ int push(string name, string value, unordered_map<string, SimpleListVariant> *ma
         list = get_if<Stack<double>>(&(map->at(name)));
         if(list == nullptr) list = get_if<Queue<double>>(&(map->at(name)));
         list->push(stod(value));
+    }
     else if(type == 's') {
         SimpleList<string> *list;
         list = get_if<Stack<string>>(&(map->at(name)));
