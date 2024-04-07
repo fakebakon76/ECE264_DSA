@@ -6,54 +6,44 @@
 #include <variant>
 
 
-
 using namespace std;
 using SimpleListVariant = variant<Queue<int>, Queue<double>, Queue<string>, Stack<int>, Stack<double>, Stack<string>>;
 
 template <typename Object>
+string toString(Object o);
+
+template <typename Object>
 SimpleList<Object> *retrieveList(string name, unordered_map<string, SimpleListVariant> *map);
 
-int createLists(const string file, unordered_map<string, SimpleListVariant> *map);
-int create(string name, string listType, unordered_map<string, SimpleListVariant> *map);
+int createLists(const string file, unordered_map<string, SimpleListVariant> *map, string *text);
+int create(string name, string listType, unordered_map<string, SimpleListVariant> *map, string *text);
 
 template <typename Object>
-int push(string name, Object value, unordered_map<string, SimpleListVariant> *map);
+int push(string name, Object value, unordered_map<string, SimpleListVariant> *map, string *text);
 
 template <typename Object>
-int pop(string name, unordered_map<string, SimpleListVariant> *map);
+int pop(string name, unordered_map<string, SimpleListVariant> *map, string *text);
 
 int main() {
-    /*
-    string inFile;
+    
+    string inFile, outFile, text = "";
     cout << "Enter the name of the input text file: ";
     cin >> inFile;
-    */
+    cout << "Enter the name of the output text file: ";
+    cin >> outFile;
+
     unordered_map<string, SimpleListVariant> map;
     
-    createLists("c.txt", &map);
+    createLists(inFile, &map, &text);
     
-    /*
-    Stack stack = Stack<string>("test");
-    stack.push("item1");
-    stack.traverse();
-    stack.pop();
-    stack.traverse();
-    map.insert({stack.getName(), stack});
-    cout << "existance of this key in stack is " << map.count("test_queu") << "\n";
-    SimpleList<double> *thing = get_if<Queue<double>>(&(map.at("test_queue")));
-    if(thing == nullptr) {
-        cout << "it worked!!\n";
-        thing = get_if<Stack<double>>(&(map.at("test_queue")));
-    } else {cout << "It didnt work"; return -1;}
-    cout << thing->getName() << "\n\n";
-    
-    */
-
+    ofstream out(outFile);
+    out << text;
+    out.close();
 }
 
 
 
-int createLists(const string file, unordered_map<string, SimpleListVariant> *map) {
+int createLists(const string file, unordered_map<string, SimpleListVariant> *map, string *text) {
        
     ifstream input(file);
     string   line    = "", 
@@ -71,17 +61,21 @@ int createLists(const string file, unordered_map<string, SimpleListVariant> *map
         //cout << command << " " << name << " " << third <<"\n";
         char type = name[0];
         if(command == "push") {
-            if(type == 'i')      push<int>(name, stoi(third), map);
-            else if(type == 'd') push<double>(name, stod(third), map);
-            else if(type == 's') push<string>(name, third, map);
+            *text += ("PROCESSING COMMAND: push " + name + " " + third + "\n");
+            if(type == 'i')      push<int>(name, stoi(third), map, text);
+            else if(type == 'd') push<double>(name, stod(third), map, text);
+            else if(type == 's') push<string>(name, third, map, text);
         }
         else if (command == "pop") {
-            if(type == 'i')      pop<int>(name, map);
-            else if(type == 'd') pop<double>(name, map);
-            else if(type == 's') pop<string>(name, map);
+            *text += ("PROCESSING COMMAND: pop " + name + "\n");
+            if(type == 'i')      pop<int>(name, map, text);
+            else if(type == 'd') pop<double>(name, map, text);
+            else if(type == 's') pop<string>(name, map, text);
         }
         else if (command == "create") {
-            create(name, third, map);
+            *text += ("PROCESSING COMMAND: create " + name + " " + third + "\n");
+
+            create(name, third, map, text);
         }
 
         // Resetting the line specific strings
@@ -96,11 +90,9 @@ int createLists(const string file, unordered_map<string, SimpleListVariant> *map
     return 0;
 }
 
-int create(string name, string listType, unordered_map<string, SimpleListVariant> *map) {
-    cout << "PROCESSING COMMAND: create " << name << " " << listType << "\n";
-    
+int create(string name, string listType, unordered_map<string, SimpleListVariant> *map, string *text) {
     if(map->count(name)) {
-        cout << "ERROR: This name already exists!\n";
+        *text += "ERROR: This name already exists!\n";
         return -1;
     }
 
@@ -119,11 +111,9 @@ int create(string name, string listType, unordered_map<string, SimpleListVariant
 }
 
 template <typename Object>
-int push(string name, Object value, unordered_map<string, SimpleListVariant> *map) {
-    cout << "PROCESSING COMMAND: push " << name << " " << value << "\n";
-    
+int push(string name, Object value, unordered_map<string, SimpleListVariant> *map, string *text) {
     if(! map->count(name)) {
-        cout << "ERROR: This name does not exist!\n";
+        *text += "ERROR: This name does not exist!\n";
         return -1;
     }
 
@@ -133,23 +123,19 @@ int push(string name, Object value, unordered_map<string, SimpleListVariant> *ma
 }
 
 template <typename Object>
-int pop(string name, unordered_map<string, SimpleListVariant> *map) {
-    cout << "PROCESSING COMMAND: pop " << name << "\n";
-    
+int pop(string name, unordered_map<string, SimpleListVariant> *map, string *text) {
     if(! map->count(name)) {
-        cout << "ERROR: This name does not exist!\n";
+        *text += "ERROR: This name does not exist!\n";
         return -1;
     }
 
     SimpleList<Object> *list = retrieveList<Object>(name, map);
     if(!list->getSize()) {
-        cout << "ERROR: This list is empty!\n";
+        *text += "ERROR: This list is empty!\n";
         return -1;
     }
 
-    // I HAVE THIS IF TO CHECK IF IT WORKS, TO SEE THE ERROR UNCOMMENT
-    //if(name[0] != 's') list->pop(); // UNCOMMENT TO SEE THAT IT WORKS FOR DOUBLES AND INTS and COMMENT THE NEXT LINE
-    cout << "Value popped: " << list->pop() << "\n"; // UNCOMMENT TO GET THE ERROR and COMMENT LINE ABOVE
+    *text += ("Value popped: " + toString(list->pop()) + "\n"); 
     return 0;
 }
 
@@ -158,4 +144,12 @@ SimpleList<Object> *retrieveList(string name, unordered_map<string, SimpleListVa
     SimpleList<Object> *list = get_if<Stack<Object>>(&(map->at(name)));
     if(list == nullptr) list = get_if<Queue<Object>>(&(map->at(name)));
     return list;
+}
+
+
+template <typename Object>
+string toString(Object o) {
+    ostringstream oss;
+    oss << o;
+    return oss.str();
 }
