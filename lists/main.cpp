@@ -16,6 +16,8 @@ template <typename Object>
 SimpleList<Object> *retrieveList(string name, unordered_map<string, SimpleListVariant> *map);
 
 int createLists(const string file, unordered_map<string, SimpleListVariant> *map, string *text);
+
+template <typename Object>
 int create(string name, string listType, unordered_map<string, SimpleListVariant> *map, string *text);
 
 template <typename Object>
@@ -75,7 +77,9 @@ int createLists(const string file, unordered_map<string, SimpleListVariant> *map
         else if (command == "create") {
             *text += ("PROCESSING COMMAND: create " + name + " " + third + "\n");
 
-            create(name, third, map, text);
+            if(type == 'i')      create<int>(name, third, map, text);
+            else if(type == 'd') create<double>(name, third, map, text);
+            else if(type == 's') create<string>(name, third, map, text);
         }
 
         // Resetting the line specific strings
@@ -89,23 +93,15 @@ int createLists(const string file, unordered_map<string, SimpleListVariant> *map
     input.close();
     return 0;
 }
-
+template <typename Object>
 int create(string name, string listType, unordered_map<string, SimpleListVariant> *map, string *text) {
     if(map->count(name)) {
         *text += "ERROR: This name already exists!\n";
         return -1;
     }
-
-    char type = name[0];
-    if(listType == "stack") {
-        if(type == 'i') map->insert({name, Stack<int>(name)});
-        else if(type == 'd') map->insert({name, Stack<double>(name)});
-        else if(type == 's') map->insert({name, Stack<string>(name)});
-    } else {
-        if(type == 'i') map->insert({name, Queue<int>(name)});
-        else if(type == 'd') map->insert({name, Queue<double>(name)});
-        else if(type == 's') map->insert({name, Queue<string>(name)});
-    }
+    
+    if(listType == "stack")  map->insert({name, Stack<Object>(name)});
+    else                     map->insert({name, Queue<Object>(name)});
 
     return 0;
 }
