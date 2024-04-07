@@ -1,15 +1,18 @@
 #include <fstream>
+#include <sstream>
 #include <iostream>
 #include "SimpleList.h"
 #include <unordered_map>
 #include <variant>
+
+
 
 using namespace std;
 using SimpleListVariant = variant<Queue<int>, Queue<double>, Queue<string>, Stack<int>, Stack<double>, Stack<string>>;
 
 int createLists(const string file, unordered_map<string, SimpleListVariant> *map);
 int create(string name, string listType, unordered_map<string, SimpleListVariant> *map);
-int push(string name, string value);
+int push(string name, string value, unordered_map<string, SimpleListVariant> *map);
 int pop(string name);
 
 int main() {
@@ -19,8 +22,7 @@ int main() {
     cin >> inFile;
     */
     unordered_map<string, SimpleListVariant> map;
-
-
+    
     createLists("c.txt", &map);
     
     /*
@@ -28,14 +30,21 @@ int main() {
     stack.push(5);
     map.insert({stack.getName(), stack});
     cout << "existance of this key in stack is " << map.count("test_queu") << "\n";
-    cout << get<Stack<double>>(map.at("test_queue")).getName();
-*/
+    SimpleList<double> *thing = get_if<Queue<double>>(&(map.at("test_queue")));
+    if(thing == nullptr) {
+        cout << "it worked!!\n";
+        thing = get_if<Stack<double>>(&(map.at("test_queue")));
+    } else {cout << "It didnt work"; return -1;}
+    cout << thing->getName() << "\n\n";
+    
+    */
+
 }
 
 
 
 int createLists(const string file, unordered_map<string, SimpleListVariant> *map) {
-    
+       
     ifstream input(file);
     string   line    = "", 
              command = "", 
@@ -44,16 +53,14 @@ int createLists(const string file, unordered_map<string, SimpleListVariant> *map
     int      word    = 0;
     
     while(getline(input, line)) {
-        // Parsing line for commands
-        for(int i = 0; i <= (int)line.length()-1; i++) {
-            if(line[i] == ' ') {word++; continue;}
-            else if(word == 0) command += line[i];
-            else if (word == 1) name += line[i];
-            else if(word == 2) third += line[i];
-            else {cout << "ERROR: createLists() in main.cpp is out of bounds\n\n"; return -1;}
-        }
-
+        
+        istringstream iss(line);
+        string command, name, third;
+        
+        iss >> command >> name >> third;
+        //cout << command << " " << name << " " << third <<"\n";
         if(command == "push") {
+            push(name, third, map);
         }
         else if (command == "pop") {
         }
@@ -95,10 +102,38 @@ int create(string name, string listType, unordered_map<string, SimpleListVariant
     return 0;
 }
 
-int push(string name) {
+int push(string name, string value, unordered_map<string, SimpleListVariant> *map) {
+    cout << "PROCESSING COMMAND: push " << name << " " << value << "\n";
+    
+    if(! map->count(name)) {
+        cout << "ERROR: This name does not exist!\n";
+        return -1;
+    }
+
+    char type = name[0];
+
+    if(type == 'i') {
+        SimpleList<int> *list;
+        list = get_if<Stack<int>>(&(map->at(name)));
+        if(list == nullptr) list = get_if<Queue<int>>(&(map->at(name)));
+        list->push(stoi(value));
+    }
+    else if(type == 'd') {
+        SimpleList<double> *list;
+        list = get_if<Stack<double>>(&(map->at(name)));
+        if(list == nullptr) list = get_if<Queue<double>>(&(map->at(name)));
+        list->push(stod(value));
+    else if(type == 's') {
+        SimpleList<string> *list;
+        list = get_if<Stack<string>>(&(map->at(name)));
+        if(list == nullptr) list = get_if<Queue<string>>(&(map->at(name)));
+        list->push(value);
+    }
+    
     return 0;
 }
 
 int pop(string name) {
+    cout << "PROCESSING COMMAND: pop " << name << "\n";
     return 0;
 }

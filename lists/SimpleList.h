@@ -6,10 +6,9 @@
 
 using namespace std;
 
-class SimpleListInterface {};
 
 template <typename Object>
-class SimpleList : public SimpleListInterface{
+class SimpleList {
     private:
         string name; 
         class Node {
@@ -103,7 +102,6 @@ class Stack : public SimpleList<Object> {
         explicit Stack(const string n): SimpleList<Object>(n) {}
 
         int push(const Object data) {
-            cout << "PROCESSING COMMAND: push " << this->getName() << " " << data << "\n";
             this->append(data);
             
             //Checking if it worked
@@ -115,7 +113,6 @@ class Stack : public SimpleList<Object> {
         }
 
         Object pop() {
-            cout << "PROCESSING COMMAND: pop " << this->getName() << "\n";
             
             Object toPop = NULL;
             int size = this->getSize();
@@ -133,7 +130,6 @@ class Stack : public SimpleList<Object> {
                 this->size--;
             } else cout << "ERROR: Stack::pop() says the stack " << this->getName() << " has a size but has no tail!\n";
             
-            cout << "Value popped: " << toPop << "\n";
             return toPop;
         }
 };
@@ -144,7 +140,6 @@ class Queue : public SimpleList<Object> {
         explicit Queue(const string n): SimpleList<Object>(n) {}
 
         int push(const Object data) {
-            cout << "PROCESSING COMMAND: push " << this->getName() << " " << data << "\n";
             this->append(data);
             
             //Checking if it worked
@@ -156,7 +151,6 @@ class Queue : public SimpleList<Object> {
         }
 
         Object pop() {
-            cout << "PROCESSING COMMAND: pop " << this->getName() << "\n";
             
             Object toPop = NULL;
             int size = this->getSize();
@@ -174,7 +168,6 @@ class Queue : public SimpleList<Object> {
                 this->size--;
             } else cout << "ERROR: Stack::pop() says the stack " << this->getName() << " has a size but has no tail!\n";
             
-            cout << "Value popped: " << toPop << "\n";
             return toPop;
         }
 
