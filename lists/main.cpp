@@ -33,8 +33,11 @@ int main() {
     createLists("c.txt", &map);
     
     /*
-    Stack stack = Stack<double>("test_queue");
-    stack.push(5);
+    Stack stack = Stack<string>("test");
+    stack.push("item1");
+    stack.traverse();
+    stack.pop();
+    stack.traverse();
     map.insert({stack.getName(), stack});
     cout << "existance of this key in stack is " << map.count("test_queu") << "\n";
     SimpleList<double> *thing = get_if<Queue<double>>(&(map.at("test_queue")));
@@ -126,19 +129,29 @@ int push(string name, Object value, unordered_map<string, SimpleListVariant> *ma
 
     SimpleList<Object> *list = retrieveList<Object>(name, map);
     list->push(value);
-    list->traverse();
     return 0;
 }
-/*
+
 template <typename Object>
 int pop(string name, unordered_map<string, SimpleListVariant> *map) {
     cout << "PROCESSING COMMAND: pop " << name << "\n";
+    
+    if(! map->count(name)) {
+        cout << "ERROR: This name does not exist!\n";
+        return -1;
+    }
 
     SimpleList<Object> *list = retrieveList<Object>(name, map);
-    cout << "Value popped: " << list->pop() << "\n";
+    if(!list->getSize()) {
+        cout << "ERROR: This list is empty!\n";
+        return -1;
+    }
 
+    // I HAVE THIS IF TO CHECK IF IT WORKS, TO SEE THE ERROR UNCOMMENT
+    //if(name[0] != 's') list->pop(); // UNCOMMENT TO SEE THAT IT WORKS FOR DOUBLES AND INTS and COMMENT THE NEXT LINE
+    cout << "Value popped: " << list->pop() << "\n"; // UNCOMMENT TO GET THE ERROR and COMMENT LINE ABOVE
     return 0;
-}*/
+}
 
 template <typename Object>
 SimpleList<Object> *retrieveList(string name, unordered_map<string, SimpleListVariant> *map) {
