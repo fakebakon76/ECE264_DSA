@@ -9,3 +9,4 @@ main.o: main.cpp SimpleList.h
 
 clean:
 	rm *.o main
+	rm o*.txt

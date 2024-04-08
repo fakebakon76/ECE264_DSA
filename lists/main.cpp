@@ -43,18 +43,14 @@ int main() {
     out.close();
 }
 
-
-
 int createLists(const string file, unordered_map<string, SimpleListVariant> *map, string *text) {
       
     ifstream input(file);
-    string   line    = "", 
-             command = "", 
-             name    = "",
-             third   = "";
+    string   line    = "", command = "", name    = "", third   = "";
     
     while(getline(input, line)) {
         
+        // Split the line into three words
         istringstream iss(line);
         string command, name, third;
         iss >> command >> name >> third;
@@ -88,6 +84,8 @@ int createLists(const string file, unordered_map<string, SimpleListVariant> *map
     input.close();
     return 0;
 }
+
+int invoke(int (*func)(
 
 template <typename Object>
 int create(string name, string listType, unordered_map<string, SimpleListVariant> *map, string *text) {
