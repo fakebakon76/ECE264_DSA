@@ -46,37 +46,33 @@ int main() {
 
 
 int createLists(const string file, unordered_map<string, SimpleListVariant> *map, string *text) {
-       
+      
     ifstream input(file);
     string   line    = "", 
              command = "", 
              name    = "",
              third   = "";
-    int      word    = 0;
     
     while(getline(input, line)) {
         
         istringstream iss(line);
         string command, name, third;
-        
         iss >> command >> name >> third;
-        //cout << command << " " << name << " " << third <<"\n";
+
         char type = name[0];
+        
         if(command == "push") {
             *text += ("PROCESSING COMMAND: push " + name + " " + third + "\n");
             if(type == 'i')      push<int>(name, stoi(third), map, text);
             else if(type == 'd') push<double>(name, stod(third), map, text);
             else if(type == 's') push<string>(name, third, map, text);
-        }
-        else if (command == "pop") {
+        } else if (command == "pop") {
             *text += ("PROCESSING COMMAND: pop " + name + "\n");
             if(type == 'i')      pop<int>(name, map, text);
             else if(type == 'd') pop<double>(name, map, text);
             else if(type == 's') pop<string>(name, map, text);
-        }
-        else if (command == "create") {
+        } else if (command == "create") {
             *text += ("PROCESSING COMMAND: create " + name + " " + third + "\n");
-
             if(type == 'i')      create<int>(name, third, map, text);
             else if(type == 'd') create<double>(name, third, map, text);
             else if(type == 's') create<string>(name, third, map, text);
@@ -87,12 +83,12 @@ int createLists(const string file, unordered_map<string, SimpleListVariant> *map
         command = "";
         name    = "";
         third   = "";
-        word    = 0;
     }
 
     input.close();
     return 0;
 }
+
 template <typename Object>
 int create(string name, string listType, unordered_map<string, SimpleListVariant> *map, string *text) {
     if(map->count(name)) {
@@ -135,6 +131,7 @@ int pop(string name, unordered_map<string, SimpleListVariant> *map, string *text
     return 0;
 }
 
+// Gets the list from the map
 template <typename Object>
 SimpleList<Object> *retrieveList(string name, unordered_map<string, SimpleListVariant> *map) {
     SimpleList<Object> *list = get_if<Stack<Object>>(&(map->at(name)));
@@ -142,7 +139,7 @@ SimpleList<Object> *retrieveList(string name, unordered_map<string, SimpleListVa
     return list;
 }
 
-
+// Converts objects to string (used for int and double)
 template <typename Object>
 string toString(Object o) {
     ostringstream oss;

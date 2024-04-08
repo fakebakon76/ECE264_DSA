@@ -115,12 +115,11 @@ class Stack : public SimpleList<Object> {
         Object pop() {
             
             Object toPop;
-            int size = this->getSize();
             
-            if(! size) cout << "ERROR: This list is empty!\n";
+            if(! this->size) cout << "ERROR: This list is empty!\n";
             else if(this->tail) {
                 toPop = this->tail->getData();
-                if(size == 1) {
+                if(this->size == 1) {
                     this->head = NULL;
                     this->tail = NULL;
                 } else {
@@ -154,11 +153,10 @@ class Queue : public SimpleList<Object> {
         Object pop() {
             
             Object toPop;
-            int size = this->getSize();
-            if(! size) cout << "ERROR: This list is empty!\n";
+            if(! this->size) cout << "ERROR: This list is empty!\n";
             else if(this->tail) {
                 toPop = this->head->getData();
-                if(size == 1) {
+                if(this->size == 1) {
                     this->head = NULL;
                     this->tail = NULL;
                 } else {
