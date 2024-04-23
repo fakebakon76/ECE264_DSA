@@ -116,14 +116,15 @@ int main() {
 bool comparator(Data *i, Data *j);
 
 void sortDataList(list<Data *> &l) {
-    unordered_map<string, list<Data *> *> map;
+    unordered_map<string, vector<Data *> *> map;
     
+
     // Make the Buckets
     ifstream input("last_names2.txt");
     list<string> lastNames;
     string lname;
     while(getline(input, lname)) {
-        map.insert({lname, new list<Data *>()});
+        map.insert({lname, new vector<Data *>()});
         lastNames.push_back(lname);
     }
     
@@ -132,13 +133,13 @@ void sortDataList(list<Data *> &l) {
     
     // Sort
     for (auto& key:lastNames) {
-        list<Data *> *dataList = map.at(key);
-        dataList->sort(comparator);
+        vector<Data *> *dataList = map.at(key);
+        sort(dataList->begin(), dataList->end(), comparator);
     }
     
     l.clear();
     for (auto& key:lastNames) {
-        list<Data *> dataList = *map.at(key);
+        vector<Data *> dataList = *map.at(key);
         for (auto data:dataList) l.push_back(data);
     }
 }
