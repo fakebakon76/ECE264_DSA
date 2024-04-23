@@ -85,8 +85,6 @@ int createLists(const string file, unordered_map<string, SimpleListVariant> *map
     return 0;
 }
 
-int invoke(int (*func)(
-
 template <typename Object>
 int create(string name, string listType, unordered_map<string, SimpleListVariant> *map, string *text) {
     if(map->count(name)) {

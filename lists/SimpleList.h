@@ -15,6 +15,9 @@ class SimpleList {
                 Node *next;
                 Node *prev;
             public:
+                inline Node *getNext() {return next;}
+                inline Node *getPrev() {return prev;}
+                inline Object getData() {return data;}
 
                 Node(const Object d, Node *n = NULL, Node *p = NULL) {
                     data = d;
@@ -29,11 +32,6 @@ class SimpleList {
                     }
                 }
                     
-
-                inline Node *getNext() {return next;}
-                inline Node *getPrev() {return prev;}
-                inline Object getData() {return data;}
-
                 inline int setNext(Node *n) {
                     next = n;
                     return 0;
