@@ -113,12 +113,63 @@ int main() {
 
 #include <unordered_map>
 
-bool comparator(Data *i, Data *j);
+bool comparator1(Data *i, Data *j);
+bool comparator2(Data *i, Data *j);
+void sort123(list<Data *> &l);
+void sort4(list<Data *> &l);
 
 void sortDataList(list<Data *> &l) {
+    
+    bool theCase = true;
+    list<Data *>::iterator it = l.begin();
+    list<Data *>::iterator it2 = next(it);
+    for(int i = 1; i < 7; i++) {
+        it2 = next(it2);
+    }
+
+    if((*it)->firstName == (*it2)->firstName) theCase = false;
+
+    if(theCase) sort123(l);
+    else sort4(l);
+
+    return;
+}
+
+void sort4(list<Data *> &l) {
     unordered_map<string, vector<Data *> *> map;
     
+    // Make the Buckets
+    ifstream input("ssn_buckets.txt");
+    list<string> lastNames;
+    string lname;
+    while(getline(input, lname)) {
+        map.insert({lname, new vector<Data *>()});
+        lastNames.push_back(lname);
+    }
+    
+    // Stick the Data in the Buckets
+    string tempStr = "";
+    for (auto pData:l) {
+        tempStr = pData->ssn.substr(0,3);
+        map.at(tempStr)->push_back(pData);
+    }
 
+    // Sort
+    for (auto& key:lastNames) {
+        vector<Data *> *dataList = map.at(key);
+        sort(dataList->begin(), dataList->end(), comparator2);
+    }
+    
+    l.clear();
+    for (auto& key:lastNames) {
+        vector<Data *> dataList = *map.at(key);
+        for (auto data:dataList) l.push_back(data);
+    }
+}
+
+void sort123(list<Data *> &l) {
+    unordered_map<string, vector<Data *> *> map;
+    
     // Make the Buckets
     ifstream input("last_names2.txt");
     list<string> lastNames;
@@ -134,7 +185,7 @@ void sortDataList(list<Data *> &l) {
     // Sort
     for (auto& key:lastNames) {
         vector<Data *> *dataList = map.at(key);
-        sort(dataList->begin(), dataList->end(), comparator);
+        sort(dataList->begin(), dataList->end(), comparator1);
     }
     
     l.clear();
@@ -144,8 +195,12 @@ void sortDataList(list<Data *> &l) {
     }
 }
 
-bool comparator(Data* i, Data* j) {
+bool comparator1(Data* i, Data* j) {
     if (i->firstName < j->firstName) return true;
     else if (i->firstName == j->firstName) return i->ssn < j->ssn;
     else return false;
+}
+
+bool comparator2(Data* i, Data* j) {
+    return i->ssn < j->ssn;
 }
