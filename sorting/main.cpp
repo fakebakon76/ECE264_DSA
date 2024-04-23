@@ -113,18 +113,31 @@ int main() {
 
 #include <unordered_map>
 
+bool comparator(Data *i, Data *j);
+
 void sortDataList(list<Data *> &l) {
     unordered_map<string, list<Data *> *> map;
     
     // Make the Buckets
     ifstream input("last_names2.txt");
+    list<string> lastNames;
     string lname;
     while(getline(input, lname)) {
         map.insert({lname, new list<Data *>()});
+        lastNames.push_back(lname);
     }
     
     // Stick the Data in the Buckets
     for (auto pData:l) map.at(pData->lastName)->push_back(pData);
     
+    for (auto& key:lastNames) {
+        list<Data *> *dataList = map.at(key);
+        dataList->sort(comparator);
+    }   
+}
 
+bool comparator(Data *i, Data *j) {
+    if(i->firstName > j->firstName) return 0;
+    else if(i->ssn > j->ssn) return 0;
+    else return 1;
 }
