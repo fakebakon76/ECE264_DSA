@@ -130,14 +130,21 @@ void sortDataList(list<Data *> &l) {
     // Stick the Data in the Buckets
     for (auto pData:l) map.at(pData->lastName)->push_back(pData);
     
+    // Sort
     for (auto& key:lastNames) {
         list<Data *> *dataList = map.at(key);
         dataList->sort(comparator);
-    }   
+    }
+    
+    l.clear();
+    for (auto& key:lastNames) {
+        list<Data *> dataList = *map.at(key);
+        for (auto data:dataList) l.push_back(data);
+    }
 }
 
-bool comparator(Data *i, Data *j) {
-    if(i->firstName > j->firstName) return 0;
-    else if(i->ssn > j->ssn) return 0;
-    else return 1;
+bool comparator(Data* i, Data* j) {
+    if (i->firstName < j->firstName) return true;
+    else if (i->firstName == j->firstName) return i->ssn < j->ssn;
+    else return false;
 }
