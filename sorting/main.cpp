@@ -78,28 +78,6 @@ void writeDataList(const list<Data *> &l, const string &filename) {
 // (Implementation of this function will be later in this file)
 void sortDataList(list<Data *> &);
 
-list<string> gothru(list<Data *> &); //////////// REMOVE THIS
-
-void writeStringList(list<string> l, const string &filename) {
-
-  ofstream output(filename);
-  if (!output) {
-    cerr << "Error: could not open " << filename << "\n";
-    exit(1);
-  }
-
-  // Write the size first
-  int size = l.size();
-  output << size << "\n";
-
-  // Write the data
-  for (auto pData:l) {
-    output << pData << "\n";
-  }
-
-  output.close();
-}
-
 // The main function calls routines to get the data, sort the data,
 // and output the data. The sort is timed according to CPU time.
 int main() {
@@ -112,20 +90,17 @@ int main() {
   cout << "Data loaded.\n";
 
   cout << "Executing sort...\n";
-/*  
+
   clock_t t1 = clock();
   sortDataList(theList);
   clock_t t2 = clock();
   double timeDiff = ((double) (t2 - t1)) / CLOCKS_PER_SEC;
-*/
 
-  list<string> list = gothru(theList);
-  //cout << "Sort finished. CPU time was " << timeDiff << " seconds.\n";
+  cout << "Sort finished. CPU time was " << timeDiff << " seconds.\n";
 
   cout << "Enter name of output file: ";
   cin >> filename;
-  //writeDataList(theList, filename);
-  writeStringList(list, filename);
+  writeDataList(theList, filename);
   return 0;
 }
 
@@ -138,27 +113,18 @@ int main() {
 
 #include <unordered_map>
 
-string determineKey(Data *data);
-
 void sortDataList(list<Data *> &l) {
+    unordered_map<string, list<Data *> *> map;
     
-}
-
-string determineKey(const Data *data) {
-    
-}
-
-
-list<string> gothru(list<Data *> &l) {
-    Data *curr = (*l.begin());
-    list<string> str;
-    for(auto pData:l) {
-        if( curr->lastName != (pData)->lastName ) {
-            str.push_back(curr->lastName);
-            curr = pData;
-        }
+    // Make the Buckets
+    ifstream input("last_names2.txt");
+    string lname;
+    while(getline(input, lname)) {
+        map.insert({lname, new list<Data *>()});
     }
-    return str;
-}
+    
+    // Stick the Data in the Buckets
+    for (auto pData:l) map.at(pData->lastName)->push_back(pData);
+    
 
-        
+}
