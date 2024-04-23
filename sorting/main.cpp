@@ -113,13 +113,10 @@ int main() {
 
 #include <unordered_map>
 
-bool comparator1(Data *i, Data *j);
-bool comparator2(Data *i, Data *j);
-void sort123(list<Data *> &l);
-void sort4(list<Data *> &l);
+bool comparator(Data *i, Data *j);
 
 void sortDataList(list<Data *> &l) {
-    
+    // Determining which case we are dealing with
     bool theCase = true;
     list<Data *>::iterator it = l.begin();
     list<Data *>::iterator it2 = next(it);
@@ -128,79 +125,43 @@ void sortDataList(list<Data *> &l) {
     }
 
     if((*it)->firstName == (*it2)->firstName) theCase = false;
+    
+    string buckets = theCase ? "lastname_buckets.txt" : "ssn_buckets.txt";
 
-    if(theCase) sort123(l);
-    else sort4(l);
-
-    return;
-}
-
-void sort4(list<Data *> &l) {
     unordered_map<string, vector<Data *> *> map;
     
     // Make the Buckets
-    ifstream input("ssn_buckets.txt");
-    list<string> lastNames;
-    string lname;
-    while(getline(input, lname)) {
-        map.insert({lname, new vector<Data *>()});
-        lastNames.push_back(lname);
+    ifstream input(buckets);
+    list<string> bucketNames;
+    string line;
+    while(getline(input, line)) {
+        map.insert({line, new vector<Data *>()});
+        bucketNames.push_back(line);
     }
     
     // Stick the Data in the Buckets
     string tempStr = "";
     for (auto pData:l) {
-        tempStr = pData->ssn.substr(0,3);
+        tempStr = theCase ? pData->lastName : pData->ssn.substr(0,3);
         map.at(tempStr)->push_back(pData);
     }
 
-    // Sort
-    for (auto& key:lastNames) {
+    // Sorting the Buckets
+    for (auto& key:bucketNames) {
         vector<Data *> *dataList = map.at(key);
-        sort(dataList->begin(), dataList->end(), comparator2);
+        sort(dataList->begin(), dataList->end(), comparator);
     }
     
+    // Putting the sorted stuff in the original list
     l.clear();
-    for (auto& key:lastNames) {
+    for (auto& key:bucketNames) {
         vector<Data *> dataList = *map.at(key);
         for (auto data:dataList) l.push_back(data);
     }
 }
 
-void sort123(list<Data *> &l) {
-    unordered_map<string, vector<Data *> *> map;
-    
-    // Make the Buckets
-    ifstream input("last_names2.txt");
-    list<string> lastNames;
-    string lname;
-    while(getline(input, lname)) {
-        map.insert({lname, new vector<Data *>()});
-        lastNames.push_back(lname);
-    }
-    
-    // Stick the Data in the Buckets
-    for (auto pData:l) map.at(pData->lastName)->push_back(pData);
-    
-    // Sort
-    for (auto& key:lastNames) {
-        vector<Data *> *dataList = map.at(key);
-        sort(dataList->begin(), dataList->end(), comparator1);
-    }
-    
-    l.clear();
-    for (auto& key:lastNames) {
-        vector<Data *> dataList = *map.at(key);
-        for (auto data:dataList) l.push_back(data);
-    }
-}
-
-bool comparator1(Data* i, Data* j) {
+bool comparator(Data* i, Data* j) {
     if (i->firstName < j->firstName) return true;
     else if (i->firstName == j->firstName) return i->ssn < j->ssn;
     else return false;
-}
-
-bool comparator2(Data* i, Data* j) {
-    return i->ssn < j->ssn;
 }
