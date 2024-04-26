@@ -126,7 +126,7 @@ void sortDataList(list<Data *> &l) {
 
     if((*it)->firstName == (*it2)->firstName) theCase = false;
     
-    string buckets = theCase ? "lastname_buckets.txt" : "ssn_buckets.txt";
+    string buckets = theCase ? "lastname_buckets.txt" : "ssn_buckets2.txt";
 
     unordered_map<string, vector<Data *> *> map;
     
@@ -142,7 +142,7 @@ void sortDataList(list<Data *> &l) {
     // Stick the Data in the Buckets
     string tempStr = "";
     for (auto pData:l) {
-        tempStr = theCase ? pData->lastName : pData->ssn.substr(0,3);
+        tempStr = theCase ? pData->lastName : pData->ssn.substr(0,5);
         map.at(tempStr)->push_back(pData);
     }
 
